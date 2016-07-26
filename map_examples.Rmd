@@ -1,0 +1,182 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Creating Maps in R
+
+R has quickly become a powerful platform for 
+
+
+
+
+
+## CHOROPLETH MAPS IN R
+
+
+
+
+
+### STEP 1 - LOAD THE BASEMAP
+
+We can use the default R package called `maps` so no tiger shapefiles are necessary.
+
+
+```{r, warning=FALSE}
+library( maps )
+
+map( 'county', fill=F )
+
+```
+
+
+
+
+
+
+# STEP 2 - GET SOME DATA
+
+# also cheating here by using a built-in dataset
+
+
+```{r}
+
+### POPULATION BY RACE AND COUNTY
+
+vars <- "adult_smoking,violent_crime,adult_obesity,alcoholimpaired_driving_deaths,health_care_costs"
+api <- paste( "http://api.datausa.io/api/csv/?show=geo&sumlevel=county&required=", vars, sep="" )
+api %>% read.csv() %>% head()
+
+```
+
+```{r}
+
+dat <- read.csv( api )
+
+dat$fips <- as.numeric( substr( dat$geo, 8, 12 ) )
+
+county.fips <- merge( county.fips, dat, by="fips" )
+```
+
+
+
+
+# STEP 3: assign a color to each level of unemployment, red = high, gray = medium, blue = low
+```{r}
+# color.function <- colorRampPalette( c("steel blue","light gray","firebrick4" ) )
+
+color.function <- colorRampPalette( c("gray80","navyblue") )
+
+col.ramp <- color.function( 7 ) # number of groups you desire
+```
+
+
+
+
+
+# STEP 4: create the levels of data
+```{r}
+
+color.vector <- cut( rank(dat$adult_smoking), breaks=7, labels=col.ramp )
+
+color.vector <- as.character( color.vector )
+
+```
+
+
+# STEP 6: draw the map
+
+
+
+```{r}
+map( database="county", col=color.vector, fill=T, lty=0.5, border="white" )
+
+```
+
+
+
+
+
+
+# STEP 7: add the map bling
+
+title( main="Unemployment Levels by County in 2009")
+
+map.scale( metric=F, ratio=F, relwidth = 0.15, cex=0.5 )
+
+legend.text=c(" 0-4 %"," 4-8 %"," 8-12 %","12-21 %","21-96 %")
+
+legend( "bottomright", bg="white",
+        pch=19, pt.cex=1.5, cex=0.7,
+        legend=legend.text, 
+        col=col.ramp, 
+        box.col="white",
+        title="Poverty Rate" 
+       )
+
+
+
+
+```{r, warning=FALSE}
+library( leaflet )
+
+# READ IN DATA
+
+violations <- read.csv( "https://raw.githubusercontent.com/lecy/maps-in-R/master/Data/OpenCodeViolations.csv" )
+
+```
+
+
+
+
+```{r}
+# COLOR CODE POINTS
+
+syr.map <- leaflet(data=violations ) %>% 
+     
+            addProviderTiles("CartoDB.Positron", tileOptions(minZoom=10, maxZoom=17))  %>%
+     
+            setView(lng=-76.14, lat=43.05, zoom=13) %>%
+     
+            setMaxBounds(lng1=-75, lat1=41, lng2=-77,  lat2=45)
+
+syr.map
+```
+
+
+
+```{r}
+
+syr.map <- 
+syr.map <- leaflet(data=violations ) %>% 
+     
+            addProviderTiles("CartoDB.Positron", tileOptions(minZoom=10, maxZoom=17))  %>%
+     
+            setView( lng=-76.17, lat=43.037, zoom=15 ) %>%
+     
+            setMaxBounds(lng1=-75, lat1=41, lng2=-77,  lat2=45)
+
+addCircles( syr.map, lng=violations$lon, lat=violations$lat )
+
+```
+
+
+```{r}
+
+        
+# highlight bed bugs in orange
+
+col.vec <- ifelse( grepl("Bed Bugs", violations$Complaint.Type, ignore.case=TRUE), "orange", "black" )
+opac <- ifelse( grepl("Bed Bugs", violations$Complaint.Type, ignore.case=TRUE), 0.8, 0.4 )
+  
+# scale points by severity
+
+addCircles( syr.map, lng = violations$lon, lat = violations$lat, popup = violations$Complaint.Type, 
+            radius=violations$Severity, 
+            fillColor=col.vec, fillOpacity=opac, stroke=F )
+
+```
+
+
+
+
