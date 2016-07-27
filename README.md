@@ -1,6 +1,6 @@
 # Maps in R
 
-This vignette contains some examples from various mapping packages in R to introduce the reader to some usefull tools and conventions.
+This vignette contains some examples from various mapping packages in R to introduce the reader to some usefull geospatial tools and conventions in the open-source world.
 
 The R Notebook of this tutorial is available as an **[RPub](http://rpubs.com/jdlecy/maps_in_r)**.
 
