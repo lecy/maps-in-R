@@ -14,6 +14,6 @@ The code violation CSV file is available in the [data folder](./Data).
 
 The shapefile for downtown tax parcels is available [here](./Data/Downtown_Syracuse.geojson).
 
-![alt text](./Data/downtown.png)
+[![alt text](./Data/downtown.png)](https://github.com/lecy/maps-in-R/blob/master/Data/Downtown_Syracuse.geojson)
 
 
