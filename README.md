@@ -2,7 +2,9 @@
 
 This vignette contains some examples from various mapping packages in R to introduce the reader to some usefull tools and conventions.
 
-The R Notebook of this tutorial is available as an [RPub here](http://rpubs.com/jdlecy/maps_in_r).
+The R Notebook of this tutorial is available as an **[RPub](http://rpubs.com/jdlecy/maps_in_r)**.
+
+### Data and Shapefiles
 
 The demographic data for the choropleth maps is from the [DataUSA API](http://datausa.io/).
 
