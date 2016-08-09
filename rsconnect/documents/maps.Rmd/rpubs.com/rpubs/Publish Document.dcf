@@ -1,0 +1,7 @@
+name: Publish Document
+account: rpubs
+server: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/201086/d1ebdbea28fa4d0dbac9de2b71cabe57
+bundleId: https://api.rpubs.com/api/v1/document/201086/d1ebdbea28fa4d0dbac9de2b71cabe57
+url: http://rpubs.com/jdlecy/201086
+when: 1470670114.49798

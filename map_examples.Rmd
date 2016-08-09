@@ -25,7 +25,7 @@ R is an incredibly powerful tool for data analysis. Is an analytical platform, i
 
 Although R was created program primarily for statistical analysis, it has become a powerful engine for mapping and geographic analysis. This vignette is designed to introduce the reader to a few of the hundreds of [spatial packages](https://cran.r-project.org/web/views/Spatial.html) in R to give a sense of the scope and power of the available tools.
 
-
+The data and markdown files for this vignette can be [found on GitHub](https://github.com/lecy/maps-in-R).
 
 
 <br>
