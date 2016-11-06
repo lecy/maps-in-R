@@ -7,11 +7,16 @@ output:
     code_folding: hide
 ---
 
-```{r, warning=FALSE, echo=FALSE }
+```{r, warning=FALSE, echo=FALSE, message=FALSE}
 
 suppressMessages(library( dplyr))
+library( pander )
 
 ```
+
+
+
+
 
 
 <br>
@@ -19,10 +24,10 @@ suppressMessages(library( dplyr))
 
 # OVERVIEW
 
-R is an incredibly powerful tool for data analysis. Is an analytical platform, it has benefitted from the decision to make the software free, open-source, and easily accessible. As a result, it has been embraced by the academic and data sciece communities as useful way to develop and share new software. As a result, people have written thousands of programs for R that can be used for specialized or advanced analysis. The core R program is best understood as an operating system that is designed to run programs, called 'packages', written by members of the R community. This has allowed the platform to evolve rapidly through libraries of user-created tools that extend far beyond the original intent of the software.
+R is an incredibly powerful tool for data analysis. As an analytical platform, it has benefitted from the decision to make the software free, open-source, and easily accessible. Consequently, it has been embraced by the academic and data science communities as useful way to develop and share new software. As a result, people have written thousands of programs for R that can be used for specialized or advanced analysis. The core R program is best understood as an operating system that is designed to run programs, called 'packages', written by members of the R community. This has allowed the platform to evolve rapidly through libraries of user-created tools that extend far beyond the original intent of the software.
 
 
-Although R was created program primarily for statistical analysis, it has become a powerful engine for mapping and geographic analysis. This vignette is designed to introduce the reader to a few of the hundreds of [spatial packages](https://cran.r-project.org/web/views/Spatial.html) in R to give a sense of the scope and power of the available tools.
+Although R was created primarily for statistical analysis, it has become a powerful engine for mapping and geographic analysis. This vignette is designed to introduce the reader to a few of the hundreds of [spatial packages](https://cran.r-project.org/web/views/Spatial.html) in R to give a sense of the scope and power of the available tools.
 
 The data and markdown files for this vignette can be [found on GitHub](https://github.com/lecy/maps-in-R).
 
@@ -45,8 +50,12 @@ Since choropleth maps group the data by geographic units they require the use of
 R provides a default package called `maps` which provides current shapefiles for US states and counties. If we wish to use an R package we can install and run it through the following commands:
 
 
-`install.packages( "mapproj" )`
-`library( "mapproj" )`
+```{r, eval=F}
+install.packages( "mapproj" )
+library( "mapproj" )
+```
+
+
 
 
 The `maps` package comes with the program by default. The package called `mapproj` allows us to project maps in a variety of styles.
@@ -60,7 +69,7 @@ Creating some basic maps in R can be done through a couple of lines of code. The
 
 
 
-```{r, warning=FALSE, fig.width = 10, fig.height = 5}
+```{r, warning=FALSE, message=F, fig.width = 10, fig.height = 5}
 library( maps )
 library( mapproj )
 
@@ -82,7 +91,7 @@ title( main="US Counties" )
 Choropleth maps in the social sciences often represent demographic data, which frequently comes from the Census. It can be quite tedious to use the Census website to search for variables and download a dataset as a CSV file, read that into our program, clean the headers, then merge the data. 
 
 
-Fortunately R makes this process a little more palatable through the use of APIs. A data API is an easy way to query a database through a website address. Your query parameters are sent through web address, and your data is printed direclty in your browser or returned as a file download. We when call the API through R, we can read the dataset directly into the program.
+Fortunately R makes this process a little more palatable through the use of APIs. A data API is an easy way to query a database through a website address. Your query parameters are sent through the web address, and your data is printed directly in your browser or returned as a file download. When call the API through R, we can read the dataset directly into the program.
 
 
 The API call will look odd at first, but once you get used to the convention you will realize that it is basically:
@@ -100,13 +109,13 @@ For example, we can use the [DataUSA](http://datausa.io/) API, which defines a q
 * Unit of Analysis:  `sumlevel=county`
 
 
-The database query would then then be: http://api.datausa.io/api/csv/?show=geo&sumlevel=county&required=adult_smoking
+The database query would then be: http://api.datausa.io/api/csv/?show=geo&sumlevel=county&required=adult_smoking
 
 
 We can read the data directly into R as follows: `smoking <- read.csv( "http://api.datausa.io/api/csv/?show=geo&sumlevel=county&required=adult_smoking" )`
 
 
-For this map, let's grab a few variables related to public health: smoking, obesity, drunk driving deaths, and Medicare reiumbursement rates. Documentation for the API is available [here](https://gist.github.com/lecy/0aa782a873cd174573f32d243233ca5b). 
+For this map, let's grab a few variables related to public health: smoking, obesity, drunk driving deaths, and Medicare reimbursement rates. Documentation for the API is available [here](https://gist.github.com/lecy/0aa782a873cd174573f32d243233ca5b). 
 
 
 ```{r}
@@ -115,7 +124,7 @@ For this map, let's grab a few variables related to public health: smoking, obes
 
 vars <- "adult_smoking,violent_crime,adult_obesity,alcoholimpaired_driving_deaths,health_care_costs&year=latest"
 api <- paste( "http://api.datausa.io/api/csv/?show=geo&sumlevel=county&required=", vars, sep="" )
-api %>% read.csv() %>% select(1:7) %>% head() 
+api %>% read.csv() %>% select(1:7) %>% head() %>% pander
 
 ```
 
@@ -135,7 +144,7 @@ county.fips <- merge( county.fips, dat, by="fips", sort=FALSE )
 
 ### Step 3 - Define a Color Scheme
 
-We select colors to communicate information about our data. If we are using a continous variable the most basic decision is whether we want to represent it as positive and negative deviations from the average (a divergent scale), or as a continuum of low to high values (a sequential scale). If we have categorical data, it is generally visualized through different colors representing each group (a qualitative scale).
+We select colors to communicate information about our data. If we are using a continuous variable the most basic decision is whether we want to represent it as positive and negative deviations from the average (a divergent scale), or as a continuum of low to high values (a sequential scale). If we have categorical data, it is generally visualized through different colors representing each group (a qualitative scale).
 
 
 <p align="center">
@@ -179,8 +188,10 @@ color.function <- colorRampPalette( c("gray80","navyblue") )
 
 col.ramp <- color.function( 5 ) # number of groups you desire
 
-plot( 1:5, rep(1,5), ylim=c(0,2), xlim=c(0,6), yaxt="n", xaxt="n", bty="n", xlab="", ylab=""  )
-points( 1:5, rep(1,5), pch=15, cex=8, col=col.ramp )
+plot( 1:5, rep(1,5), ylim=c(-5,5), xlim=c(0,6), yaxt="n", 
+      xaxt="n", bty="n", xlab="", ylab=""  )
+
+points( 1:5, rep(1,5), pch=15, cex=10, col=col.ramp )
 ```
 
 
@@ -190,7 +201,7 @@ points( 1:5, rep(1,5), pch=15, cex=8, col=col.ramp )
 
 ### Step 4 - Split the Data into Levels
 
-Choropleth maps represent levels of data as discrete colors. The decision on how to split a continuous variable into discrete categories is not a trivial one. This decision can have a big impact on how we visually interpret the results. As an example, if we use the rule to create bins with an equal width, each bin will capture a different amount of data. The bins near the center of the distribution will gather a large proportion of the data, and the bins near the extremes will capture only a small amount. Conversely, you can define the bins so that they each contain a similar proportion of the data. The implications of these two decisions on group size woudl look something like this:
+Choropleth maps represent levels of data as discrete colors. The decision on how to split a continuous variable into discrete categories is not a trivial one. This decision can have a big impact on how we visually interpret the results. As an example, if we use the rule to create bins with an equal width, each bin will capture a different amount of data. The bins near the center of the distribution will gather a large proportion of the data, and the bins near the extremes will capture only a small amount. Conversely, you can define the bins so that they each contain a similar proportion of the data. The implications of these two decisions on group size would look something like this:
 
 ```{r, fig.width = 10, fig.height = 3}
 histgm <- hist( rnorm(10000000), breaks=1000, plot=FALSE )
@@ -230,7 +241,7 @@ costs   <- as.character( cut( rank(county.fips$health_care_costs), breaks=5, lab
 
 ### Step 5 - Draw the Map
 
-We have some data. We have a color scale. We have split the data into groups. We are not ready to create the map. Let's use an Albers projection instead of the default rectangular projection.
+We have some data. We have a color scale. We have split the data into groups. We are now ready to create the map. Let's use an Albers projection instead of the default rectangular projection.
 
 ```{r, fig.width = 10, fig.height = 5}
 map( database="county", col=smoking, fill=T, border="gray80", lwd=0.001, proj='albers', par=c(30,40)  )
@@ -253,7 +264,7 @@ legend( "bottomright", bg="white",
 
 
 
-If we want to examine some trends in health patterns across the country we can plot multiple maps together. In this case, we can see that there is a greater prevelance of smoking and obesity in the South, but drunk driving seems to occur at equal rates across the country. Medicate reimbursement rates are also lower in the South than in other parts of the country.  
+If we want to examine some trends in health patterns across the country we can plot multiple maps together. In this case, we can see that there is a greater prevalence of smoking and obesity in the South, but drunk driving seems to occur at equal rates across the country. Medicare reimbursement rates are also lower in the South than in other parts of the country.  
 
 ```{r, fig.width = 10, fig.height = 5}
 
@@ -287,9 +298,9 @@ title( main="Medicare Rates")
 
 ## THE PLOTLY PACKAGE
 
-The `maps` package in R is useful to produce high-quality static graphics suitable for publications or reports. If we are generating analysis that will be shared on websites, however, we have some additional options. There are a growing number of packages that make use of javascript to create interactive graphs that have features like zooming and hover-over fields. The `plotly` package offers many of these features.
+The `maps` package in R is useful to produce high-quality static graphics suitable for publications or reports. If we are generating analysis that will be shared on websites, however, we have some additional options. There are a growing number of packages that make use of JavaScript to create interactive graphs that have features like zooming and hover-over fields. The `plotly` package offers many of these features.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=F }
 
 library(plotly)
 
@@ -311,8 +322,8 @@ g <- list(
 )
 
 # render the plot
-plot_ly(df, z = total.exports, text = hover, locations = code, type = 'choropleth',
-        locationmode = 'USA-states', color = total.exports, colors = 'Purples',
+plot_ly(df, z = df$total.exports, text = df$hover, locations = df$code, type = 'choropleth',
+        locationmode = 'USA-states', color = df$total.exports, colors = 'Purples',
         marker = list(line = l), colorbar = list(title = "Millions USD")) %>%
   layout(title = '2011 US Agriculture Exports by State<br>(Hover for breakdown)', geo = g,
          width = 800, height = 500 )
@@ -325,7 +336,7 @@ plot_ly(df, z = total.exports, text = hover, locations = code, type = 'choroplet
 
 # LEAFLET MAPS
 
-For a long period the best base maps in the world were created as proprietary intellectual property by GIS companies  that only made them available if you licensed their software for thousands of dollars. Base maps have been liberated through collaborative open-source efforts like the [Open Street Maps](https://www.openstreetmap.org/about), a platform that was "built by a community of mappers that contribute and maintain data about roads, trails, cafés, railway stations, and much more, all over the world." Other companies like Google have created APIs to allow people to use their map platforms to build new tools.
+For a long period the best base maps in the world were created as proprietary intellectual property by GIS companies  that only made them available if you licensed their software for thousands of dollars. Base maps have been liberated through collaborative open-source efforts like the [Open Street Maps](https://www.openstreetmap.org/about), a platform that was "built by a community of mappers that contribute and maintain data about roads, trails, railway stations, and much more, all over the world." Other companies like Google have created APIs to allow people to use their map platforms to build new tools.
 
 
 The availability of these resources has created a thriving open-source GIS community that has contributed a number of new tools to R. The Leaflet package allows users to select from a wide variety of base map styles, and use them to create interactive web applications.
@@ -432,7 +443,7 @@ Let's consider an example using a database of farmer's markets in New York City.
 
 farmers.markets <- read.csv( "http://data.cityofnewyork.us/api/views/b7kx-qikm/rows.csv?accessType=DOWNLOAD", stringsAsFactors=F )
 
-head( farmers.markets )
+head( farmers.markets ) %>% pander
 
 ```
 
@@ -442,7 +453,7 @@ head( farmers.markets )
 The `ggmap` package has implemented a convenient geocoding function that makes use of the Google map API. Street addresses are sent to Google, and they send back latitude and longitude coordinates. One nice feature of using the Google API is that results are fairly predictable - the first result that you see when you type the address in Google Maps is the result that will be returned through the API.
 
 
-You can likely anticipate the main problem with geocoding the addresses listed above - they provide only the street address in the city. If the street is generic, like First Avenue or MLK Boulevard, then that address might be matched to lots of cities. We need a more complete address for the geocoding to work. Not a problem, we can just add the city and state the to address field in the database.
+You can likely anticipate the main problem with geocoding the addresses listed above - they provide only the street address in the city. If the street is generic, like First Avenue or MLK Boulevard, then that address might be matched to lots of cities. We need a more complete address for the geocoding to work. Not a problem, we can just add the city field and state name to the address field in the database.
 
 
 ```{r}
@@ -450,7 +461,7 @@ basic <- head( farmers.markets$Street.Address )
 
 addresses <- paste( farmers.markets$Street.Address, farmers.markets$Borough, "NY", sep=", " )
 
-data.frame( BASIC=basic, AUGMENTED=head( addresses ) )
+data.frame( BASIC=basic, AUGMENTED=head( addresses ) ) %>% pander
 ```
 
 <br>
@@ -497,10 +508,10 @@ R has a robust set of packages for working with traditional shapefiles that are 
 Shapefiles are notoriously cranky formats to work with because each map consists of five separate files. If you lose one of these you are out of luck. Furthermore, if you want to create a map that has multiple layers - say a US map that has states (polygons), roads (lines), and cities (points) then you will need three separate shapefiles, up to 15 individual files to manage for one map!
 
 
-A new open standard format has been developed to make shapefiles easier to use.  [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) replaces all give files in a traditional shapefile witn only one file which can also include attribute data. Additionally, you can include multiple layers in the same GeoJSON file. If you need smaller files, the [TopoJSON](http://zevross.com/blog/2014/04/22/spatial-data-on-a-diet-tips-for-file-size-reduction-using-topojson/) format can significantly reduce the overall file size. There are some convenient R libraries for converting a typical shapefile to a GeoJSON format.
+A new open standard format has been developed to make shapefiles easier to use.  [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON) replaces all give files in a traditional shapefile with only one file which can also include attribute data. Additionally, you can include multiple layers in the same GeoJSON file. If you need smaller files, the [TopoJSON](http://zevross.com/blog/2014/04/22/spatial-data-on-a-diet-tips-for-file-size-reduction-using-topojson/) format can significantly reduce the overall file size. There are some convenient R libraries for converting a typical shapefile to a GeoJSON format.
 
 
-```{r, eval=FALSE }
+```{r, eval=FALSE, message=F, warning=F }
 
 
 # LOAD THE SHAPEFILES
@@ -563,7 +574,7 @@ Another convenient feature of GeoJSON is that files posted on GitHub (think Drop
 
 We can read the file into R for analysis using the `geojsonio` package.
 
-```{r, warning=FALSE }
+```{r, warning=FALSE, message=F }
 
 library( geojsonio )
 library( maptools )
@@ -585,7 +596,8 @@ plot( downtown, main="Land Parcels in Downtown Syracuse", border="gray30" )
 Note that the file automatically contains all of the attributes associated with each tax parcel.
 
 ```{r}
-head(   as.data.frame( downtown )[ , c(2:7,11,21)]   )
+
+head(   as.data.frame( downtown )[ , c(2:7,11,21)]   ) %>% pander
 
 ```
 
@@ -634,10 +646,10 @@ plot( downtown, col=religious, border=NA, main="Churches" )
 <br>
 <br>
 
-From this analysis we can see that although many cities have developed a lot of mixed-use properties in their urban core, the downtown neighbhorhood in Syracuse is still dominated by commercial space. The large number of parkings lots support the commuter population since it is not possible to live close to where you work without residential offerings. These parking lots also erode some of the most lucrative tax base for the city since the land value will be much lower when there is not building on top of it. There are few parks to make the downtown area livable.
+From this analysis we can see that although many cities have developed a lot of mixed-use properties in their urban core, the downtown neighborhood in Syracuse is still dominated by commercial space. The large number of parking lots support the commuter population since it is not possible to live close to where you work without residential offerings. These parking lots also erode some of the most lucrative tax base for the city since the land value will be much lower when there is not building on top of it. There are few parks to make the downtown area livable.
 
 
-Syracuse has embraced an urban planning model where the business district is separate from the residential space within the community. As a consequence the downtown is surrounded by large highways that are needed to carry workers from their homes to their offices, and they need a signicant number of parking lots that are utilized primarily during business hours. Streets are wide and concrete is the dominant feature. Compare this to the town of Cambridge, MA, that was built before the highway boom. Although it is five times more dense than Syracuse it has small streets and fewer parking lots. Residential and commercial space is interspersed, meaning people can walk to work if they live nearby. These two downtowns can be compared side-by-side by grabbing map tiles at the same scale using the `ggmap` package:
+Syracuse has embraced an urban planning model where the business district is separate from the residential space within the community. As a consequence the downtown is surrounded by large highways that are needed to carry workers from their homes to their offices, and they need a significant number of parking lots that are utilized primarily during business hours. Streets are wide and concrete is the dominant feature. Compare this to the town of Cambridge, MA, that was built before the highway boom. Although it is five times more dense than Syracuse it has small streets and fewer parking lots. Residential and commercial space is interspersed, meaning people can walk to work if they live nearby. These two downtowns can be compared side-by-side by grabbing map tiles at the same scale using the `ggmap` package:
 
 
 
@@ -691,6 +703,6 @@ multiplot( syracuse, cambridge, cols = 2 )
 
 # CONCLUSION
 
-The examples presented here are only scratching the surface on the geospatial capabilities of R, but hopefully they demonstrate some of the useful tools that are emerging from the open-source community. Note that most of these maps were created with only a few lines of code, meaning it does not take a tremendous amount of traininig to begin building applications in R. 
+The examples presented here are only scratching the surface on the geospatial capabilities of R, but hopefully they demonstrate some of the useful tools that are emerging from the open-source community. Note that most of these maps were created with only a few lines of code, meaning it does not take a tremendous amount of training to begin building applications in R. 
 
 
