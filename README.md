@@ -12,7 +12,7 @@ A tutorial on using the DataUSA API is available as a [GitHub Gist here](https:/
 
 The code violation CSV file is available in the [data folder](./Data).
 
-The shapefile for downtown tax parcels is available [here](./Data/Downtown_Syracuse.geojson).
+The shapefile for downtown tax parcels is available [here](./Data/Downtown_Syracuse.geojson)..
 
 [![alt text](./Data/downtown.png)](https://github.com/lecy/maps-in-R/blob/master/Data/Downtown_Syracuse.geojson)
 
