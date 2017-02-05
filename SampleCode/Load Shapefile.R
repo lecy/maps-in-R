@@ -1,4 +1,4 @@
-setwd( "C:/Users/jdlecy/Dropbox/02 - CLASSES/02 - MASTERS/09 - DDM II/SYR Parcels" )
+setwd( "..." )
 
 
 # load and plot your shapefile
