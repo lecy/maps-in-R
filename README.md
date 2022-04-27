@@ -2,6 +2,8 @@
 
 This vignette contains some examples from various mapping packages in R to introduce the reader to some usefull geospatial tools and conventions in the open-source world.
 
+[maps in R](https://lecy.github.io/maps-in-R/maps.html)
+
 The R Notebook of this tutorial is available as an **[RPub](http://rpubs.com/jdlecy/201086)**.
 
 ### Data and Shapefiles
